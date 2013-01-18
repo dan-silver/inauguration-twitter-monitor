@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title></title>
+    <title>Inaguration Tweets</title>
     <link rel='stylesheet' href='/stylesheets/style.css' />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <script src="/js/highcharts.js" type="text/javascript"></script>
@@ -14,8 +14,17 @@
                     type: 'areaspline'
                  },
                  title: {
-                    text: 'Tweets relating to the President and the Inaguration (#inauguration, @inauguration, "inauguration", #obama, @obama, "obama", etc.)'
-                 },
+                    text: 'Tweets relating to the President and the Inaguration',
+                    style: {
+                     	fontSize: '25px'
+                    }
+                },
+                subtitle: {
+                    text: '#inauguration, @inauguration, "inauguration", #obama, @obama, "obama", etc.',
+                    style: {
+                         fontSize: '15px'
+                    }
+                },
                  xAxis: {
                     type: 'datetime',
                     tickPixelInterval: 500      
@@ -29,7 +38,7 @@
                     enabled: false
                 },
                  series: [{
-                    name: '#inauguration',
+                    name: 'Tweets per Minute',
                     data: [
                         <% graphData.forEach(function (data) { %> 
                             {x:<%= data.timestamp*60*1000 %>,y:<%= data.count %> },
