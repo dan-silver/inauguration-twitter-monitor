@@ -1,0 +1,2 @@
+{"ts":1358535432932,"silentsave":true,"restoring":false,"patch":[[]],"length":0}
+{"contributors":[],"silentsave":false,"ts":1358542639547,"patch":[[{"diffs":[[1,"var config = {}\r\n\r\nconfig.consumer_key = 'WvGVjpXHUrhquA74biVYeA',\r\nconfig.consumer_secret = 'eAxe35lHYvQWoCYCRmV3j6c6jij0AxZUP7lku1L3dLg',\r\nconfig.access_token_key = '85220930-CWKOOH5TSNJ8i8gHukcRJUYqSbYKbv0nI0VDbmiAb',\r\nconfig.access_token_secret = '5AS71IaLPz9laPrlCR8X35VLz9O8uNmnREsCIRTk'\r\n\r\nmodule.exports = config;"]],"start1":0,"start2":0,"length1":0,"length2":321}]],"length":321,"saved":false}

@@ -14,7 +14,7 @@
                     type: 'areaspline'
                  },
                  title: {
-                    text: 'Tweets relating to the inaguration'
+                    text: 'Tweets relating to the President and the Inaguration (#inauguration, @inauguration, "inauguration", #obama, @obama, "obama", etc.)'
                  },
                  xAxis: {
                     type: 'datetime',
@@ -25,23 +25,16 @@
                        text: 'Tweets per Minute'
                     }
                  },
+                legend: {
+                    enabled: false
+                },
                  series: [{
                     name: '#inauguration',
                     data: [
-<% graphData[0].forEach(function (data) { %> 
-    {x:<%= data.timestamp*60*1000 %>,y:<%= data.count %> },
-<% }) %>
-
-]
-                 },
-{
-                    name: '#obama',
-                    data: [
-<% graphData[1].forEach(function (data) { %> 
-    {x:<%= data.timestamp*60*1000 %>,y:<%= data.count %> },
-<% }) %>
-
-]
+                        <% graphData.forEach(function (data) { %> 
+                            {x:<%= data.timestamp*60*1000 %>,y:<%= data.count %> },
+                        <% }) %>
+                    ]
                  }]
               });
            });

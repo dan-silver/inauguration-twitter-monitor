@@ -1,12 +1,9 @@
 
 var express = require('express')
-//  , routes = require('./routes')
   , http = require('http')
   , path = require('path')
   , twitter = require('ntwitter')
-  , moment = require('moment')
   , config = require('./config');
-;
   var app = express();
 
 var NUMBER_OF_SERIES = 2;
@@ -29,11 +26,6 @@ app.configure('development', function(){
 });
 
 app.get('/', function(req,res) {
- /*   var formattedData = [];
-    formattedData = graphData;
-    for(var i =0;i<formattedData.length;i++) {
-        formattedData[i].timestamp = formattedData[i].timestamp*60;
-    }*/
     res.render('index', {graphData:graphData}); 
 });
 
@@ -48,49 +40,34 @@ var t = new twitter({
 	access_token_secret: config.access_token_secret
 });
 
-t.stream('statuses/filter', {'track':'inauguration'}, function(stream) {
+t.stream('statuses/filter', {'track':'obama, inauguration'}, function(stream) {
     stream.on('data', function (data) { //tweet=data.text
-        tweets[0].push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});
-        
+        console.log("0:"+data.text);
+        tweets.push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});
     });
     stream.on('error', function(error, code) {
         console.log("My error: " + error + ": " + code);
     });
 });
-t.stream('statuses/filter', {'track':'obama'}, function(stream) {
-    stream.on('data', function (data) { //tweet=data.text
-        tweets[1].push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});
-        
-    });
-    stream.on('error', function(error, code) {
-        console.log("My error: " + error + ": " + code);
-    });
-});
+
 var tweets = [];
-var graphData = [];
-for (var i=0;i<NUMBER_OF_SERIES;i++) {
-    graphData[i] = [];//[{timestamp, count},{timestamp, count},...]
-    tweets[i] = [];
-}
+var graphData = [];//[{timestamp, count},{timestamp, count},...]
 
 setInterval(function() {
-    graphData.forEach(function(point, series) {
-        for (var i=0;i<tweets[series].length;i++) {
+        for (var i=0;i<tweets.length;i++) {
                 var found = 0;
-                point.forEach(function(data) {
-                    if (data.timestamp == tweets[series][i].timestamp) {
+                graphData.forEach(function(data) {
+                    if (data.timestamp == tweets[i].timestamp) {
                         data.count++;
                         found = 1;
-                        console.log('existing match for the same minute! total is ' + data.count);
                     }
                 });
                 if (found === 0) {
-                    point.push({timestamp: tweets[series][i].timestamp, count: 1});
+                    graphData.push({timestamp: tweets[i].timestamp, count: 1});
                 }
         }
-        console.log(tweets[series].length + ' tweets added');
-        tweets[series] = [];
-    });
-    console.log(graphData)
+     //   console.log(tweets[series].length + ' tweets added');
+        tweets = [];
+ //   console.log(graphData)
 },2000);
 
