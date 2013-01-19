@@ -39,7 +39,7 @@ var t = new twitter({
 	access_token_secret: config.access_token_secret
 });
 
-t.stream('statuses/filter', {'track':'obama, inauguration'}, function(stream) {
+t.stream('statuses/filter', {'track':'obama, inauguration, barackobama, obamainaugural, Obama2012'}, function(stream) {
     stream.on('data', function (data) { //tweet=data.text
         console.log(data.text);
         tweets.push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});

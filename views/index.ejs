@@ -11,18 +11,19 @@
               chart1 = new Highcharts.Chart({
                  chart: {
                     renderTo: 'container',
-                    type: 'areaspline'
+                    type: 'areaspline',
+                    marginTop: 80
                  },
                  title: {
-                    text: 'Tweets relating to the President and the Inaguration',
+                    text: 'Tweets Relating to the Presidential Inaguration',
                     style: {
-                     	fontSize: '25px'
+                     	fontSize: '35px'
                     }
                 },
                 subtitle: {
-                    text: '#inauguration, @inauguration, "inauguration", #obama, @obama, "obama", etc.',
+                    text: '<br>Any tweets containing the words inauguration, barackobama, obamainaugural, or Obama2012 (with or without a @ or #)<br>',
                     style: {
-                         fontSize: '15px'
+                        fontSize: '17px'
                     }
                 },
                  xAxis: {
