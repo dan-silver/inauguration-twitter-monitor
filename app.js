@@ -76,20 +76,25 @@ setInterval(function() { //Every 10 seconds update the count of tweets per minut
 },10*1000);
 
 setInterval(function() {
-    if (graphData.length === 0) return;
-    db.tweetData.find({where: {timestamp:graphData[0].timestamp}}).success(function(row) {
+    for (var i=0;i<graphData.length;i++) {
+        updateDatabase(graphData[i].timestamp, graphData[i].count, i);
+    }
+}, 30*1000); //add new tweets to db every 30 seconds
+
+function updateDatabase(timestamp, count, i) {
+    db.tweetData.find({where: {timestamp: timestamp}}).success(function(row) {
         if (row) {
-            row.tweetCount+=graphData[0].count;
+            row.tweetCount+=count;
             row.save().success(function() {
-                graphData.splice(0,1); //remove element once saved to the db
+                graphData.splice(i,1); //remove element once saved to the db
             });
         } else {
-            db.tweetData.create({timestamp: graphData[0].timestamp, tweetCount: graphData[0].count}).success(function() {
-                graphData.splice(0,1); //remove element once saved to the db
+            db.tweetData.create({timestamp: graphData[i].timestamp, tweetCount: graphData[i].count}).success(function() {
+                graphData.splice(i,1); //remove element once saved to the db
             });
         }
     });
-}, 60*1000); //add new tweets to db every minute
+}
 
 function getData() { //Fetch tweet count data from database
     var dataBuffer = [];
