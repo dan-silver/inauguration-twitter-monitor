@@ -2,8 +2,11 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , twitter = require('ntwitter')
-  , db = require('./db')
-  , config = require('./config');
+  , db = require('./db');
+  
+if (!process.env.database) {
+    var config = require('./config');
+}
   
   var app = express();
 
@@ -33,10 +36,10 @@ http.createServer(app).listen(app.get('port'), function(){
 });
 
 var t = new twitter({
-	consumer_key: config.consumer_key,
-	consumer_secret: config.consumer_secret,
-	access_token_key: config.access_token_key,
-	access_token_secret: config.access_token_secret
+	consumer_key: process.env.consumer_key || config.consumer_key,
+	consumer_secret: process.env.consumer_secret || config.consumer_secret,
+	access_token_key: process.env.access_token_key || config.access_token_key,
+	access_token_secret: process.env.access_token_secret || config.access_token_secret
 });
 
 t.stream('statuses/filter', {'track':'obama, inauguration, barackobama, obamainaugural, Obama2012'}, function(stream) {
