@@ -27,7 +27,16 @@
                 },
                  xAxis: {
                     type: 'datetime',
-                    tickPixelInterval: 500      
+                    tickPixelInterval: 200,
+                    dateTimeLabelFormats: {
+                        second: '%l:%M %P',
+                        minute: '%l:%M',
+                        hour: '%H:%M',
+                        day: '%e. %b',
+                        week: '%e. %b',
+                        month: '%b \'%y',
+                        year: '%Y'
+                    }
                  },
                  yAxis: {
                     title: {

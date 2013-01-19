@@ -1,12 +1,11 @@
-
 var express = require('express')
   , http = require('http')
   , path = require('path')
   , twitter = require('ntwitter')
+  , db = require('./db')
   , config = require('./config');
+  
   var app = express();
-
-var NUMBER_OF_SERIES = 2;
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -26,7 +25,7 @@ app.configure('development', function(){
 });
 
 app.get('/', function(req,res) {
-    res.render('index', {graphData:graphData}); 
+    res.render('index', {graphData:cachedDataFromDb}); 
 });
 
 http.createServer(app).listen(app.get('port'), function(){
@@ -42,7 +41,7 @@ var t = new twitter({
 
 t.stream('statuses/filter', {'track':'obama, inauguration'}, function(stream) {
     stream.on('data', function (data) { //tweet=data.text
-        console.log("0:"+data.text);
+        console.log(data.text);
         tweets.push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});
     });
     stream.on('error', function(error, code) {
@@ -50,24 +49,51 @@ t.stream('statuses/filter', {'track':'obama, inauguration'}, function(stream) {
     });
 });
 
-var tweets = [];
-var graphData = [];//[{timestamp, count},{timestamp, count},...]
+var tweets = []; //[{tweet, timestamp}, ...]
+var graphData = []; //[{timestamp, count},{timestamp, count},...]
+var cachedDataFromDb = []; //[{timestamp, count},{timestamp, count},...]
+
+setInterval(function() { //Every 10 seconds, add tweets to running count of tweets per minute
+    for (var i=0;i<tweets.length;i++) {
+            var found = 0;
+            graphData.forEach(function(data) {
+                if (data.timestamp == tweets[i].timestamp) {
+                    data.count++;
+                    found = 1;
+                }
+            });
+            if (found === 0) {
+                graphData.push({timestamp: tweets[i].timestamp, count: 1});
+            }
+    }
+    tweets = [];
+},10*1000);
 
 setInterval(function() {
-        for (var i=0;i<tweets.length;i++) {
-                var found = 0;
-                graphData.forEach(function(data) {
-                    if (data.timestamp == tweets[i].timestamp) {
-                        data.count++;
-                        found = 1;
-                    }
-                });
-                if (found === 0) {
-                    graphData.push({timestamp: tweets[i].timestamp, count: 1});
-                }
+    if (graphData.length === 0) return;
+    db.tweetData.find({where: {timestamp:graphData[0].timestamp}}).success(function(row) {
+        if (row) {
+            row.tweetCount+=graphData[0].count;
+            row.save().success(function() {
+                graphData.splice(0,1); //remove element once saved to the db
+            });
+        } else {
+            db.tweetData.create({timestamp: graphData[0].timestamp, tweetCount: graphData[0].count}).success(function() {
+                graphData.splice(0,1); //remove element once saved to the db
+            });
         }
-     //   console.log(tweets[series].length + ' tweets added');
-        tweets = [];
- //   console.log(graphData)
-},2000);
+    });
+}, 60*1000); //add new tweets to db every minute
 
+
+function getData() { //Fetch tweet count data from database
+    var dataBuffer = [];
+    db.tweetData.findAll({order: 'timestamp ASC'}).success(function(allData) {
+        allData.forEach(function(p) {
+            dataBuffer.push({timestamp:p.timestamp,count:p.tweetCount});
+        });
+        cachedDataFromDb = dataBuffer;
+    });
+}
+getData();
+setInterval(getData, 60*1000);
