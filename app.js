@@ -89,7 +89,7 @@ setInterval(function() {
 
 function getData() { //Fetch tweet count data from database
     var dataBuffer = [];
-    db.tweetData.findAll({order: 'timestamp ASC', where: ["timestamp > ?", Math.round(new Date().getTime()/1000/60)-12*60]}).success(function(allData) {
+    db.tweetData.findAll({order: 'timestamp ASC', where: ["timestamp > ?", Math.round(new Date().getTime()/1000/60)-60]}).success(function(allData) {
         allData.forEach(function(p) {
             dataBuffer.push({timestamp:p.timestamp,count:p.tweetCount});
         });
