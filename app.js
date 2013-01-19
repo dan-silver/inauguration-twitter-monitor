@@ -41,7 +41,7 @@ var t = new twitter({
 
 t.stream('statuses/filter', {'track':'obama, inauguration, barackobama, obamainaugural, Obama2012'}, function(stream) {
     stream.on('data', function (data) { //tweet=data.text
-        tweets.push({timestamp: Math.round(new Date().getTime()/1000/60), tweet: data.text});
+        tweets.push({timestamp: Math.round(new Date().getTime()/1000/60)});
     });
     stream.on('error', function(error, code) {
         console.log("My error: " + error + ": " + code);
@@ -52,7 +52,7 @@ var tweets = []; //[{tweet, timestamp}, ...]
 var graphData = []; //[{timestamp, count},{timestamp, count},...]
 var cachedDataFromDb = []; //[{timestamp, count},{timestamp, count},...]
 
-setInterval(function() { //Every 10 seconds, add tweets to running count of tweets per minute
+setInterval(function() { //Every 10 seconds update the count of tweets per minute
     for (var i=0;i<tweets.length;i++) {
             var found = 0;
             graphData.forEach(function(data) {
@@ -84,10 +84,9 @@ setInterval(function() {
     });
 }, 60*1000); //add new tweets to db every minute
 
-
 function getData() { //Fetch tweet count data from database
     var dataBuffer = [];
-    db.tweetData.findAll({order: 'timestamp ASC'}).success(function(allData) {
+    db.tweetData.findAll({order: 'timestamp ASC', where: ["timestamp > ?", Math.round(new Date().getTime()/1000/60)-12*60]}).success(function(allData) {
         allData.forEach(function(p) {
             dataBuffer.push({timestamp:p.timestamp,count:p.tweetCount});
         });
