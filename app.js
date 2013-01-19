@@ -42,9 +42,13 @@ var t = new twitter({
 	access_token_secret: process.env.access_token_secret || config.access_token_secret
 });
 
-t.stream('statuses/filter', {'track':'obama, inauguration, barackobama, obamainaugural, Obama2012'}, function(stream) {
+t.stream('statuses/filter', {track:'obama, inauguration, barackobama, obamainaugural, Obama2012', stall_warnings: true}, function(stream) {
     stream.on('data', function (data) { //tweet=data.text
-        tweets.push({timestamp: Math.round(new Date().getTime()/1000/60)});
+        if (data.warning) {
+            console.log(data.warning);
+        } else {
+            tweets.push({timestamp: Math.round(new Date().getTime()/1000/60)});
+        }
     });
     stream.on('error', function(error, code) {
         console.log("My error: " + error + ": " + code);
