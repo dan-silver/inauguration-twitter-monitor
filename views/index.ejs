@@ -12,10 +12,11 @@
                  chart: {
                     renderTo: 'container',
                     type: 'areaspline',
-                    marginTop: 80
+                    marginTop: 80,
+                    zoomType: 'x'
                  },
                  title: {
-                    text: 'Tweets Relating to the Presidential Inaguration',
+                    text: 'Tweets Relating to the Presidential Inauguration',
                     style: {
                      	fontSize: '35px'
                     }
@@ -51,7 +52,7 @@
                     name: 'Tweets per Minute',
                     data: [
                         <% graphData.forEach(function (data) { %> 
-                            {x:<%= data.timestamp*60*1000 %>,y:<%= data.count %> },
+                            {x:<%= (data.timestamp*60*1000)-1000*60*60*6 %>,y:<%= data.count %> },
                         <% }) %>
                     ]
                  }]

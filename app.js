@@ -35,7 +35,6 @@ app.get('/', function(req,res) {
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
-
 var t = new twitter({
 	consumer_key: process.env.consumer_key || config.consumer_key,
 	consumer_secret: process.env.consumer_secret || config.consumer_secret,
@@ -96,13 +95,14 @@ function updateDatabase(timestamp, count, i) {
         }
     });
 }
-
+var cachedDataFromDb = [];
 function getData() { //Fetch tweet count data from database
     var dataBuffer = [];
-    db.tweetData.findAll({order: 'timestamp ASC', where: ["timestamp > ?", Math.round(new Date().getTime()/1000/60)-60]}).success(function(allData) {
+    db.tweetData.findAll({order: 'timestamp ASC', where: ["timestamp > ?", Math.round(new Date().getTime()/1000/60)-60*2]}).success(function(allData) {
         allData.forEach(function(p) {
             dataBuffer.push({timestamp:p.timestamp,count:p.tweetCount});
         });
+        allData.splice(allData.length,1); //remove current minute since it's still being populated with tweets
         cachedDataFromDb = dataBuffer;
     });
 }
