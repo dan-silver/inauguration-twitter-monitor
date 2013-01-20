@@ -2,8 +2,9 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , twitter = require('ntwitter')
-  , db = require('./db');
-  
+  , db = require('./db')
+  , request = require('request');
+
 if (!process.env.database) {
     var config = require('./config');
 }
@@ -107,3 +108,12 @@ function getData() { //Fetch tweet count data from database
 }
 getData();
 setInterval(getData, 60*1000);
+
+//keep the app alive!
+setInterval(function() {
+    request('http://twitter-inauguration-monitor.herokuapp.com/', function (error, response, body) {
+      if (!error && response.statusCode == 200) {
+        console.log(body) // Print the google web page.
+      }
+    })
+}, 1000*60*10);
