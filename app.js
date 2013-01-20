@@ -35,6 +35,7 @@ app.get('/', function(req,res) {
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
+
 var t = new twitter({
 	consumer_key: process.env.consumer_key || config.consumer_key,
 	consumer_secret: process.env.consumer_secret || config.consumer_secret,
@@ -102,7 +103,7 @@ function getData() { //Fetch tweet count data from database
         allData.forEach(function(p) {
             dataBuffer.push({timestamp:p.timestamp,count:p.tweetCount});
         });
-        allData.splice(allData.length,1); //remove current minute since it's still being populated with tweets
+        dataBuffer.splice(dataBuffer.length-1,2); //remove the recent minutes since they're still being populated with tweets
         cachedDataFromDb = dataBuffer;
     });
 }
